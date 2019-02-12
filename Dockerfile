@@ -69,7 +69,7 @@ COPY $NGINX_CONFIG_SRC_PATH/upstream.conf /etc/nginx/conf/upstream.conf
 COPY $NGINX_CONFIG_SRC_PATH/default.conf /etc/nginx/conf.d/default.conf
 COPY $NGINX_CONFIG_SRC_PATH/status.conf /etc/nginx/conf.d/status.conf
 COPY $NGINX_CONFIG_SRC_PATH/php-fpm.conf /usr/local/etc/php-fpm.conf
-COPY $NGINX_CONFIG_SRC_PATH/www.conf /etc/php7/php-fpm.d/craft.conf
+COPY $NGINX_CONFIG_SRC_PATH/www.conf /etc/php7/php-fpm.d/invoice-ninja.conf
 COPY $PHP_CONFIG_SRC_PATH/php.ini /usr/local/etc/php/php.ini
 
 
