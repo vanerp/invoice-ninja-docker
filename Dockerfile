@@ -19,12 +19,9 @@ ADD $S6_CONFIG_SRC_PATH/init /etc/cont-init.d/
 ADD $S6_CONFIG_SRC_PATH/scripts /usr/bin/
 
 
-#####
-# SYSTEM REQUIREMENT
-#####
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        zlib1g-dev git libgmp-dev unzip nginx-full \
+        zlib1g-dev git libgmp-dev unzip nginx-full ssmtp \
         libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
         build-essential chrpath libssl-dev libxft-dev \
         libfreetype6 libfontconfig1 libfontconfig1-dev \
@@ -43,19 +40,10 @@ RUN apt-get update \
     && mv /var/www/ninja /var/www/app  \
     && mkdir -p /var/www/app/public/logo /var/www/app/storage \
     && touch /var/www/app/.env \
-    && chmod -R 755 /var/www/app/storage  \
-    && chown -R www-data:www-data /var/www/app/storage /var/www/app/bootstrap /var/www/app/public/logo /var/www/app/.env \
     && rm -rf /var/www/app/docs /var/www/app/tests /var/www/ninja \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* 
-
-RUN { \
-		echo 'opcache.memory_consumption=128'; \
-		echo 'opcache.interned_strings_buffer=8'; \
-		echo 'opcache.max_accelerated_files=4000'; \
-		echo 'opcache.revalidate_freq=60'; \
-		echo 'opcache.fast_shutdown=1'; \
-		echo 'opcache.enable_cli=1'; \
-} > /usr/local/etc/php/conf.d/opcache-recommended.ini
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+    && php -r "readfile('https://getcomposer.org/installer');" | php -- --install-dir=/usr/local/bin --filename=composer \
+    && chmod +sx /usr/local/bin/composer
 
 
 COPY $NGINX_CONFIG_SRC_PATH/nginx.conf /etc/nginx/nginx.conf
@@ -69,6 +57,7 @@ COPY $NGINX_CONFIG_SRC_PATH/status.conf /etc/nginx/conf.d/status.conf
 COPY $NGINX_CONFIG_SRC_PATH/php-fpm.conf /usr/local/etc/php-fpm.conf
 COPY $NGINX_CONFIG_SRC_PATH/www.conf /etc/php7/php-fpm.d/invoice-ninja.conf
 COPY $PHP_CONFIG_SRC_PATH/php.ini /usr/local/etc/php/php.ini
+COPY $PHP_CONFIG_SRC_PATH/opcache.ini /usr/local/etc/php/conf.d/opcache-recommended.ini
 
 
 WORKDIR /var/www/app
