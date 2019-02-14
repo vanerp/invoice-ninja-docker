@@ -13,11 +13,6 @@ ENV PHANTOMJS_BIN_PATH /usr/local/bin/phantomjs
 
 ### S6 OVERLAY ###
 COPY $BIN_PATH/s6-overlay-amd64.tar.gz /tmp/s6-overlay-amd64.tar.gz
-RUN tar xzf /tmp/s6-overlay-amd64.tar.gz -C /
-ADD $S6_CONFIG_SRC_PATH/services /etc/services.d/
-ADD $S6_CONFIG_SRC_PATH/init /etc/cont-init.d/
-ADD $S6_CONFIG_SRC_PATH/scripts /usr/bin/
-
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -40,12 +35,16 @@ RUN apt-get update \
     && mv /var/www/ninja /var/www/app  \
     && mkdir -p /var/www/app/public/logo /var/www/app/storage \
     && touch /var/www/app/.env \
+    && tar xzf /tmp/s6-overlay-amd64.tar.gz -C / \
     && rm -rf /var/www/app/docs /var/www/app/tests /var/www/ninja \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
     && php -r "readfile('https://getcomposer.org/installer');" | php -- --install-dir=/usr/local/bin --filename=composer \
     && chmod +sx /usr/local/bin/composer
 
 
+ADD $S6_CONFIG_SRC_PATH/services /etc/services.d/
+ADD $S6_CONFIG_SRC_PATH/init /etc/cont-init.d/
+ADD $S6_CONFIG_SRC_PATH/scripts /usr/bin/
 COPY $NGINX_CONFIG_SRC_PATH/nginx.conf /etc/nginx/nginx.conf
 COPY $NGINX_CONFIG_SRC_PATH/vhost.conf /etc/nginx/customers.d/vhost.conf
 COPY $NGINX_CONFIG_SRC_PATH/fastcgi.conf /etc/nginx/conf/fastcgi.conf

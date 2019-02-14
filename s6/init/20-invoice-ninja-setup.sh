@@ -1,7 +1,7 @@
 #!/usr/bin/with-contenv bash
 
 
-cd /var/www/app/
+cd /var/www/app
 
 composer dump-autoload --optimize
 php artisan optimize --force
